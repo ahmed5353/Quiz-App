@@ -1,17 +1,34 @@
-import { useReducer, useState } from "react";
+import { type } from "@testing-library/user-event/dist/type";
+import { useReducer } from "react";
 
 function reducer(state, action) {
   console.log(state, action);
-  if (action.type === "inc") return state + 1;
-  if (action.type === "dec") return state - 1;
-  if (action.type === "setCount") return action.payload;
+  // if (action.type === "inc") return state + 1;
+  // if (action.type === "dec") return state - 1;
+  // if (action.type === "setCount") return action.payload;
   // return state + action;
+  // return { count: 0, step: 1 };
+  switch (action.type) {
+    case "inc":
+      return { ...state, count: state.count + state.step };
+    case "dec":
+      return { ...state, count: state.count - state.step };
+    case "setCount":
+      return { ...state, count: action.payload };
+    case "setSetup":
+      return { ...state, step: action.payload };
+    case "reset":
+      return intialState;
+    default:
+      throw new Error("Unknown Action");
+  }
 }
 
+const intialState = { count: 0, step: 1 };
 function DateCounter() {
-  // const [count, setCount] = useState(0);
-  const [count, dispatch] = useReducer(reducer, 0);
-  const [step, setStep] = useState(1);
+  // const [count, dispatch] = useReducer(reducer, 0);
+  const [state, dispatch] = useReducer(reducer, intialState);
+  const { count, step } = state;
 
   // This mutates the date object.
   const date = new Date("june 21 2027");
@@ -22,7 +39,7 @@ function DateCounter() {
 
     // setCount((count) => count - 1);
     // setCount((count) => count - step);
-    dispatch(-1);
+    // dispatch(-1);
   };
 
   const inc = function () {
@@ -37,12 +54,14 @@ function DateCounter() {
   };
 
   const defineStep = function (e) {
-    setStep(Number(e.target.value));
+    // setStep(Number(e.target.value));
+    dispatch({ type: "setSetup", payload: Number(e.target.value) });
   };
 
   const reset = function () {
     // setCount(0);
-    setStep(1);
+    // setStep(1);
+    dispatch({ type: "reset" });
   };
 
   return (
